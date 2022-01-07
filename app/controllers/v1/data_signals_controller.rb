@@ -1,6 +1,6 @@
 class V1::DataSignalsController < ApplicationController
   
-  def get_signal
+  def generate_signal_data
 
     render json: true, status: 200
   end
