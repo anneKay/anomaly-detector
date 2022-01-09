@@ -3,8 +3,8 @@
 class AnomalyDetector
   attr_reader :data_points, :threshold
 
-  LAG = 4.freeze
-  INFLUENCE = 0.5.freeze
+  LAG = 5 # size of moving average
+  INFLUENCE = 0.5 # influence of previous peak on z-score
 
   def initialize(signal_params={})
     @data_points = signal_params['data']
@@ -14,38 +14,38 @@ class AnomalyDetector
   def call
     return nil unless data_points.present?
 
-    size = data_points.size
-    signals = Array.new(size, 0)
+    data_size = data_points.size
+    signals = Array.new(data_size, 0)
 
     measured_data = data_points.dup
     base_data = measured_data.take(LAG)
-    base_data_average = [mean(base_data)]
-    base_data_deviation = [standard_deviation(base_data)]
+    base_data_mean = [mean(base_data)]
+    base_data_deviation = [std_deviation(base_data)]
 
-    (LAG..size-1).each do |index|
+    (LAG..data_size-1).each do |index|
       prev = index - 1
 
-      if (data_points[index] - base_data_average[index-LAG]).abs > threshold * base_data_deviation[index-LAG]
-        signals[index] = data_points[index] > base_data_average[index-LAG] ? 1 : -1
+      if (data_points[index] - base_data_mean[index-LAG]).abs > threshold * base_data_deviation[index-LAG]
+        signals[index] = data_points[index] > base_data_mean[index-LAG] ? 1 : -1
         measured_data[index] = (INFLUENCE * data_points[index]) + ((1-INFLUENCE) * measured_data[prev])
       end
 
-      filtered_slice = measured_data[index-LAG..prev]
-      base_data_average[(index-LAG)+1] = mean(filtered_slice)
-      base_data_deviation[(index-LAG)+1] = standard_deviation(filtered_slice)
+      filtered_base_data = measured_data[index-LAG..prev]
+      base_data_mean[(index-LAG)+1] = mean(filtered_base_data)
+      base_data_deviation[(index-LAG)+1] = std_deviation(filtered_base_data)
     end
+  
     signals
   end
 
 private
 
   def mean(array)
-    array.reduce(&:+) / array.size.to_f
+    array.mean if array.present?
   end
 
-  def standard_deviation(array)
-    array_mean = mean(array)
-    Math.sqrt(array.reduce(0.0) { |a, b| a.to_f + ((b.to_f - array_mean) ** 2) } / array.size.to_f)
+  def std_deviation(array)
+    array.stdev if array.present?
   end
 
 end
