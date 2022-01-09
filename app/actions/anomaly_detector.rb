@@ -12,6 +12,8 @@ class AnomalyDetector
   end
 
   def call
+    return nil unless data_points.present?
+
     size = data_points.size
     signals = Array.new(size, 0)
 

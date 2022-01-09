@@ -3,8 +3,13 @@
 class V1::DataSignalsController < ApplicationController
   
   def generate_signal_data
-    # handle validation first and return appropriate error messages
-    render json: anomaly_detector, status: 200
+    signal_data_params = DataSignalValidator.new(data_signal_params)
+
+    if signal_data_params.valid?
+      render json: anomaly_detector, status: 200
+    else
+      render json: signal_data_params.errors, status: 422
+    end
   end
 
 private
