@@ -5,3 +5,16 @@ AllCops:
     - 'script/**/*'
     - 'bin/*'
     - !ruby/regexp /old_and_unused\.rb$/
+Rails:
+  Enabled: true
+Layout/AccessModifierIndentation:
+  EnforcedStyle: outdent
+Layout/EmptyLinesAroundBlockBody:
+  Enabled: false
+Layout/EmptyLinesAroundClassBody:
+  EnforcedStyle: empty_lines
+Metrics/LineLength:
+  Enabled: false
+  Max: 110
+Style/FrozenStringLiteralComment:
+  EnforcedStyle: always

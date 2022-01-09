@@ -6,10 +6,9 @@ class AnomalyDetector
   LAG = 4.freeze
   INFLUENCE = 0.5.freeze
 
-
-  def initialize(data_points, threshold)
-    @data_points = data_points
-    @threshold = threshold
+  def initialize(signal_params={})
+    @data_points = signal_params['data']
+    @threshold = signal_params['threshold']
   end
 
   def call
