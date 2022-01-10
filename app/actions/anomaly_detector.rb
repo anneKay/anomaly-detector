@@ -3,12 +3,12 @@
 class AnomalyDetector
   attr_reader :data_points, :threshold
 
-  LAG = 5 # size of moving average
-  INFLUENCE = 0.5 # influence of previous peak on z-score
+  LAG = 5   # size of moving average
+  INFLUENCE = 0.5   # influence of previous peak on z-score
 
   def initialize(signal_params={})
-    @data_points = signal_params['data']
-    @threshold = signal_params['threshold']
+    @data_points = signal_params[:data]
+    @threshold = signal_params[:threshold]
   end
 
   def call
@@ -25,7 +25,7 @@ class AnomalyDetector
     (LAG..data_size-1).each do |index|
       prev = index - 1
 
-      if (data_points[index] - base_data_mean[index-LAG]).abs > threshold * base_data_deviation[index-LAG]
+      if (data_points[index] - base_data_mean[index-LAG]).abs > threshold.to_i * base_data_deviation[index-LAG]
         signals[index] = data_points[index] > base_data_mean[index-LAG] ? 1 : -1
         measured_data[index] = (INFLUENCE * data_points[index]) + ((1-INFLUENCE) * measured_data[prev])
       end

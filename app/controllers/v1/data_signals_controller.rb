@@ -6,7 +6,7 @@ class V1::DataSignalsController < ApplicationController
     signal_data_params = DataSignalValidator.new(data_signal_params)
 
     if signal_data_params.valid?
-      render json: anomaly_detector, status: 200
+      render json: { signal: anomaly_detector }, status: 200
     else
       render json: signal_data_params.errors, status: 422
     end
