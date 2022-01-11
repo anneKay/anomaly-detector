@@ -1,14 +1,15 @@
 # frozen_string_literal: true
 
 class AnomalyDetector
+
   attr_reader :data_points, :threshold
 
-  LAG = 5   # size of moving average
-  INFLUENCE = 0.5   # influence of previous peak on z-score
+  LAG = 5 # size of moving average
+  INFLUENCE = 0.5 # influence of previous peak on z-score
   MAXIMUM_PEAK = 1
   MINIMUM_PEAK = -1
 
-  def initialize(signal_params={})
+  def initialize(signal_params = {})
     @data_points = signal_params[:data]
     @threshold = signal_params[:threshold]
   end
@@ -24,19 +25,19 @@ class AnomalyDetector
     base_data_mean = [mean(base_data)]
     base_data_deviation = [std_deviation(base_data)]
 
-    (LAG..data_size-1).each do |index|
+    (LAG..data_size - 1).each do |index|
       prev = index - 1
 
-      if (data_points[index] - base_data_mean[index-LAG]).abs > threshold.to_i * base_data_deviation[index-LAG]
-        signals[index] = data_points[index] > base_data_mean[index-LAG] ? MAXIMUM_PEAK : MINIMUM_PEAK
+      if anomaly?(index, base_data_mean, base_data_deviation)
+        signals[index] = get_anomaly_signal(index, base_data_mean)
         measured_data[index] = get_influence(measured_data, index)
       end
 
-      filtered_base_data = measured_data[index-LAG..prev]
-      base_data_mean[(index-LAG)+1] = mean(filtered_base_data)
-      base_data_deviation[(index-LAG)+1] = std_deviation(filtered_base_data)
+      filtered_base_data = measured_data[index - LAG..prev]
+      base_data_mean[(index - LAG) + 1] = mean(filtered_base_data)
+      base_data_deviation[(index - LAG) + 1] = std_deviation(filtered_base_data)
     end
-  
+
     signals
   end
 
@@ -51,6 +52,17 @@ private
   end
 
   def get_influence(data, index)
-    (INFLUENCE * data_points[index]) + ((1-INFLUENCE) * data[index-1])
+    (INFLUENCE * data_points[index]) + ((1 - INFLUENCE) * data[index - 1])
   end
+
+  def anomaly?(index, base_mean, std_dev)
+    ave_score = threshold.to_i * std_dev[index - LAG]
+    z_score = (data_points[index] - base_mean[index - LAG]).abs
+    z_score > ave_score
+  end
+
+  def get_anomaly_signal(index, base_mean)
+    data_points[index] > base_mean[index - LAG] ? MAXIMUM_PEAK : MINIMUM_PEAK
+  end
+
 end

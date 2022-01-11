@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class V1::DataSignalsController < ApplicationController
-  
+
   def generate_signal_data
     signal_data_params = DataSignalValidator.new(data_signal_params)
 
@@ -15,10 +15,11 @@ class V1::DataSignalsController < ApplicationController
 private
 
   def data_signal_params
-    params.require(:data_signal).permit(:threshold, :data => [])
+    params.require(:data_signal).permit(:threshold, data: [])
   end
 
   def anomaly_detector
     @anomaly_detector ||= AnomalyDetector.new(data_signal_params).call
   end
+
 end

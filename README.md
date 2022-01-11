@@ -35,3 +35,4 @@ you should get a sample response as follows;
 * Possible Future Improvements
 - Handle dataset from an events stream with tools such as Kafka that enables rapid and scalable ingestion of streaming data
 - Implement a notification system that alerts users when an anomaly is detected
+- Integrate circleci, codeclimate for CI/CD worflow
