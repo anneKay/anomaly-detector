@@ -5,6 +5,8 @@ class AnomalyDetector
 
   LAG = 5   # size of moving average
   INFLUENCE = 0.5   # influence of previous peak on z-score
+  MAXIMUM_PEAK = 1
+  MINIMUM_PEAK = -1
 
   def initialize(signal_params={})
     @data_points = signal_params[:data]
@@ -26,8 +28,8 @@ class AnomalyDetector
       prev = index - 1
 
       if (data_points[index] - base_data_mean[index-LAG]).abs > threshold.to_i * base_data_deviation[index-LAG]
-        signals[index] = data_points[index] > base_data_mean[index-LAG] ? 1 : -1
-        measured_data[index] = (INFLUENCE * data_points[index]) + ((1-INFLUENCE) * measured_data[prev])
+        signals[index] = data_points[index] > base_data_mean[index-LAG] ? MAXIMUM_PEAK : MINIMUM_PEAK
+        measured_data[index] = get_influence(measured_data, index)
       end
 
       filtered_base_data = measured_data[index-LAG..prev]
@@ -48,4 +50,7 @@ private
     array.stdev if array.present?
   end
 
+  def get_influence(data, index)
+    (INFLUENCE * data_points[index]) + ((1-INFLUENCE) * data[index-1])
+  end
 end

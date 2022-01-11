@@ -21,7 +21,7 @@ RSpec.describe AnomalyDetector do
     context "When called with invalid data signal input" do
       subject { AnomalyDetector.new(invalid_signal_params).call }
 
-      it "should return the right signal for a data series" do
+      it "should returns nil for empty data_set" do
 
         expect(subject).to be(nil)
       end

@@ -11,7 +11,7 @@ RSpec.describe DataSignalValidator do
     let (:signal_params_with_invalid_data) { { data: [1,2,1,1,1,'two',1,1,1], threshold: 3} }
     let (:signal_params_with_empty_data) { { data: [], threshold: 3} }
      
-    context "When called with valid data signal input" do
+    context "When called with valid data input" do
       subject { DataSignalValidator.new(valid_data_signal_params) }
 
       it "should return true for valid params" do
